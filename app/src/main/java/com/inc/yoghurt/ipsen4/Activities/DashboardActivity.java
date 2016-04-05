@@ -1,8 +1,9 @@
-package com.inc.yoghurt.ipsen4;
+package com.inc.yoghurt.ipsen4.Activities;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +13,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.inc.yoghurt.ipsen4.Models.Event;
+import com.inc.yoghurt.ipsen4.R;
+import com.inc.yoghurt.ipsen4.Services.StucommService;
+import com.inc.yoghurt.ipsen4.StucommTask;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -40,6 +59,40 @@ public class DashboardActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        final Properties properties = new Properties();
+
+        try {
+            properties.load(getBaseContext().getAssets().open("app.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Request request = chain.request();
+
+                        Request authRequest = request.newBuilder()
+                            .addHeader("clientToken", properties.getProperty("stucommClientToken"))
+                            .addHeader("accessToken", properties.getProperty("stucommAccessToken"))
+                            .build();
+
+                        return chain.proceed(authRequest);
+                    }
+                })
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://ipsen4.stucomm.com")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
+
+        StucommService stucommService = retrofit.create(StucommService.class);
+
+        new StucommTask().execute(stucommService);
     }
 
     @Override

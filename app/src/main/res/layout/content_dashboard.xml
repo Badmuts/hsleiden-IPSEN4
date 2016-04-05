@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.inc.yoghurt.ipsen4.DashboardActivity"
+    tools:context=".Activities.DashboardActivity"
     tools:showIn="@layout/app_bar_dashboard">
 
     <TextView

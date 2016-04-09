@@ -4,52 +4,50 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.inc.yoghurt.ipsen4.App;
 import com.inc.yoghurt.ipsen4.R;
-import com.inc.yoghurt.ipsen4.Stucomm.DaggerStucommComponent;
 import com.inc.yoghurt.ipsen4.Stucomm.StucommApi;
-import com.inc.yoghurt.ipsen4.Stucomm.StucommComponent;
-import com.inc.yoghurt.ipsen4.Stucomm.StucommModule;
+import com.inc.yoghurt.ipsen4.Stucomm.StucommTask;
+
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
-public class DashboardActivity extends AppCompatActivity
+public class DashboardActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    @Inject App app;
-    // @Inject StucommApi api;
+    @Inject StucommTask retrieveAgenda;
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.nav_view) NavigationView navigationView;
     @Bind(R.id.drawer_layout) DrawerLayout drawer;
+    @Bind(R.id.courseName) TextView courseName;
 
-    StucommComponent stucommComponent;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        stucommComponent = DaggerStucommComponent.builder()
-                .appComponent(((App) getApplication()).component())
-                .stucommModule(new StucommModule())
-                .build();
-        stucommComponent.inject(this);
-
+        // Perfom injection
+        ((App) getApplication()).component().inject(this);
+        // View stuff
         setContentView(R.layout.activity_dashboard);
-        ButterKnife.bind(this);
-
         setSupportActionBar(toolbar);
         navigationView.setNavigationItemSelectedListener(this);
+        // Retrieve agenda
+        try {
+            String course = retrieveAgenda.execute().get().get(0).toString();
+            courseName.setText(course);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public void onBackPressed() {
+    @Override public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -57,15 +55,13 @@ public class DashboardActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.dashboard, menu);
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -79,9 +75,8 @@ public class DashboardActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    @SuppressWarnings("StatementWithEmptyBody") @Override public boolean onNavigationItemSelected(
+            MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 

@@ -12,11 +12,12 @@ import okhttp3.Response;
  * Created by daan on 08/04/16.
  */
 public class StucommInterceptor implements Interceptor {
-    StucommConfiguration configuration;
+    private final String clientToken;
+    private final String accessToken;
 
-    @Inject
-    public StucommInterceptor(StucommConfiguration configuration) {
-        this.configuration = configuration;
+    public StucommInterceptor(String clientToken, String accessToken) {
+        this.clientToken = clientToken;
+        this.accessToken = accessToken;
     }
 
     @Override
@@ -24,8 +25,8 @@ public class StucommInterceptor implements Interceptor {
         Request request = chain.request();
 
         Request authRequest = request.newBuilder()
-                .addHeader("clientToken", configuration.getClientToken())
-                .addHeader("accessToken", configuration.getAccessToken())
+                .addHeader("clientToken", clientToken)
+                .addHeader("accessToken", accessToken)
                 .build();
 
         return chain.proceed(authRequest);

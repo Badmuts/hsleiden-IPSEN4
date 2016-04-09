@@ -15,10 +15,10 @@ import dagger.Provides;
  * {@link android.app.Application} to create.
  */
 @Module
-public class AndroidModule {
+public class AppModule {
     private final App application;
 
-    public AndroidModule(App application) {
+    public AppModule(App application) {
         this.application = application;
     }
 
@@ -26,7 +26,7 @@ public class AndroidModule {
      * Allow the application context to be injected but require that it be annotated with
      * {@link ForApp @Annotation} to explicitly differentiate it from an activity context.
      */
-    @Provides @Singleton App provideApp() {
+    @Provides @Singleton @ForApp App provideApp() {
         return application;
     }
 

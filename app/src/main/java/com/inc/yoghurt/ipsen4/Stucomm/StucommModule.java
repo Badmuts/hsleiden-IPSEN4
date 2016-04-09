@@ -1,6 +1,6 @@
 package com.inc.yoghurt.ipsen4.Stucomm;
 
-import com.inc.yoghurt.ipsen4.StucommTask;
+import com.inc.yoghurt.ipsen4.App;
 
 import dagger.Module;
 import dagger.Provides;
@@ -13,9 +13,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 @Module
 public class StucommModule {
+    private final App app;
 
-    @Provides
-    StucommApi provideStucommApi(StucommConfiguration configuration, StucommInterceptor interceptor) {
+    public StucommModule(App app) {
+        this.app = app;
+    }
+
+    @Provides StucommApi provideStucommApi(StucommConfiguration configuration,
+                                           StucommInterceptor interceptor) {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
                 .build();
@@ -29,19 +34,16 @@ public class StucommModule {
         return retrofit.create(StucommApi.class);
     }
 
-    @Provides
-    StucommConfiguration provideStucommConfiguration(StucommConfiguration configuration) {
-        return configuration;
+    @Provides StucommConfiguration provideStucommConfiguration() {
+        return new StucommConfiguration(app);
     }
 
-    @Provides
-    StucommInterceptor provideStucommInterceptor(StucommInterceptor interceptor) {
-        return interceptor;
+    @Provides StucommInterceptor provideStucommInterceptor(StucommConfiguration configuration) {
+        return new StucommInterceptor(configuration.getClientToken(), configuration.getAccessToken());
     }
 
-    @Provides
-    StucommTask provideStucommTask(StucommTask task) {
-        return task;
+    @Provides StucommTask provideStucommTask(StucommApi api) {
+        return new StucommTask(api);
     }
 
 }

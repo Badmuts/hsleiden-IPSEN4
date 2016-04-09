@@ -3,7 +3,9 @@ package com.inc.yoghurt.ipsen4.Stucomm;
 import android.content.Context;
 
 import com.inc.yoghurt.ipsen4.App;
+import com.inc.yoghurt.ipsen4.ForApp;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -18,11 +20,11 @@ public class StucommConfiguration {
     private final Properties configFile;
 
     @Inject
-    public StucommConfiguration(App context, Properties configFile) {
+    public StucommConfiguration(@ForApp App context) {
         this.context = context;
-        this.configFile = configFile;
+        configFile = new Properties();
         try {
-            configFile.load(context.getAssets().open("stucomm.properties"));
+            configFile.load(this.context.getAssets().open("stucomm.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -2,6 +2,8 @@ package com.inc.yoghurt.ipsen4.Models;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,7 +12,6 @@ import java.util.List;
  * Created by daan on 05/04/16.
  */
 public class Event {
-
     private long id;
     private String notes;
     private String type_name;
@@ -94,5 +95,20 @@ public class Event {
 
     public void setLectures(List<String> lectures) {
         this.lectures = lectures;
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "id=" + id +
+                ", notes='" + notes + '\'' +
+                ", type_name='" + type_name + '\'' +
+                ", highlighted=" + highlighted +
+                ", lectures=" + lectures +
+                ", shortName='" + shortName + '\'' +
+                ", longName='" + longName + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
     }
 }

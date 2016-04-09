@@ -1,4 +1,4 @@
-package com.inc.yoghurt.ipsen4;
+package com.inc.yoghurt.ipsen4.Stucomm;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -17,12 +17,15 @@ import retrofit2.Call;
 /**
  * Created by daan on 05/04/16.
  */
-public class StucommTask extends AsyncTask<Void, Void, Void> {
-    @Inject
-    StucommApi stucommApi;
+public class StucommTask extends AsyncTask<Void, Void, List<Event>> {
+    private final StucommApi stucommApi;
+
+    public StucommTask(StucommApi stucommApi) {
+        this.stucommApi = stucommApi;
+    }
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected List<Event> doInBackground(Void... params) {
         Call<List<Event>> schedule = stucommApi.getSchedule("1453071600", "1453590000");
         List<Event> events = new ArrayList<>();
         try {
@@ -30,8 +33,6 @@ public class StucommTask extends AsyncTask<Void, Void, Void> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        Log.d("StucommApi", events.get(0).getLongName());
-        return null;
+        return events;
     }
 }

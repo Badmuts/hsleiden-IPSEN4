@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.inc.yoghurt.ipsen4.Activities.BaseActivity;
 import com.inc.yoghurt.ipsen4.Activities.DashboardActivity;
+import com.inc.yoghurt.ipsen4.Stucomm.StucommModule;
 
 import javax.inject.Singleton;
 import dagger.Component;
@@ -16,18 +17,18 @@ public class App extends Application {
     private AppComponent component;
 
     @Singleton
-    @Component(modules = {AndroidModule.class})
+    @Component(modules = {AppModule.class, StucommModule.class})
     public interface AppComponent {
-        App app();
         void inject(App app);
         void inject(BaseActivity baseActivity);
+        void inject(DashboardActivity dashboardActivity);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         component = DaggerApp_AppComponent.builder()
-                .androidModule(new AndroidModule(this))
+                .stucommModule(new StucommModule(this))
                 .build();
         component.inject(this);
     }

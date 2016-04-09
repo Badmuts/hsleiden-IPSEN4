@@ -1,26 +1,29 @@
 package com.inc.yoghurt.ipsen4;
 
 import android.os.AsyncTask;
-import android.speech.tts.Voice;
 import android.util.Log;
 
 import com.inc.yoghurt.ipsen4.Models.Event;
-import com.inc.yoghurt.ipsen4.Services.StucommService;
+import com.inc.yoghurt.ipsen4.Stucomm.StucommApi;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 
 /**
  * Created by daan on 05/04/16.
  */
-public class StucommTask extends AsyncTask<StucommService, Integer, Long> {
+public class StucommTask extends AsyncTask<Void, Void, Void> {
+    @Inject
+    StucommApi stucommApi;
+
     @Override
-    protected Long doInBackground(StucommService... stucommServices) {
-        StucommService stucommService = stucommServices[0];
-        Call<List<Event>> schedule = stucommService.getSchedule("1453071600", "1453590000");
+    protected Void doInBackground(Void... params) {
+        Call<List<Event>> schedule = stucommApi.getSchedule("1453071600", "1453590000");
         List<Event> events = new ArrayList<>();
         try {
             events = schedule.execute().body();
@@ -28,7 +31,7 @@ public class StucommTask extends AsyncTask<StucommService, Integer, Long> {
             e.printStackTrace();
         }
 
-        Log.d("StucommService", events.get(0).getLongName());
+        Log.d("StucommApi", events.get(0).getLongName());
         return null;
     }
 }

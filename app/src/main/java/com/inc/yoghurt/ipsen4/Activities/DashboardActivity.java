@@ -1,103 +1,55 @@
 package com.inc.yoghurt.ipsen4.Activities;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.inc.yoghurt.ipsen4.Models.Event;
+import com.inc.yoghurt.ipsen4.App;
 import com.inc.yoghurt.ipsen4.R;
-import com.inc.yoghurt.ipsen4.Services.StucommService;
-import com.inc.yoghurt.ipsen4.StucommTask;
+import com.inc.yoghurt.ipsen4.Stucomm.DaggerStucommComponent;
+import com.inc.yoghurt.ipsen4.Stucomm.StucommApi;
+import com.inc.yoghurt.ipsen4.Stucomm.StucommComponent;
+import com.inc.yoghurt.ipsen4.Stucomm.StucommModule;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import javax.inject.Inject;
 
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    @Inject App app;
+    // @Inject StucommApi api;
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.nav_view) NavigationView navigationView;
+    @Bind(R.id.drawer_layout) DrawerLayout drawer;
+
+    StucommComponent stucommComponent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        stucommComponent = DaggerStucommComponent.builder()
+                .appComponent(((App) getApplication()).component())
+                .stucommModule(new StucommModule())
+                .build();
+        stucommComponent.inject(this);
+
         setContentView(R.layout.activity_dashboard);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
+
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        final Properties properties = new Properties();
-
-        try {
-            properties.load(getBaseContext().getAssets().open("app.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new Interceptor() {
-                    @Override
-                    public Response intercept(Chain chain) throws IOException {
-                        Request request = chain.request();
-
-                        Request authRequest = request.newBuilder()
-                            .addHeader("clientToken", properties.getProperty("stucommClientToken"))
-                            .addHeader("accessToken", properties.getProperty("stucommAccessToken"))
-                            .build();
-
-                        return chain.proceed(authRequest);
-                    }
-                })
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://ipsen4.stucomm.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build();
-
-        StucommService stucommService = retrofit.create(StucommService.class);
-
-        new StucommTask().execute(stucommService);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -147,7 +99,6 @@ public class DashboardActivity extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

@@ -12,18 +12,14 @@ import java.util.List;
 public class Event {
 
     private long id;
-    @SerializedName("short_name")
-    private String shortName;
-    @SerializedName("long_name")
-    private String longName;
     private String notes;
     private String type_name;
-    @SerializedName("start_date")
-    private Date startDate;
-    @SerializedName("end_date")
-    private Date endDate;
     private boolean highlighted;
     private List<String> lectures = new ArrayList<>();
+    @SerializedName("short_name") private String shortName;
+    @SerializedName("long_name") private String longName;
+    @SerializedName("start_date") private Date startDate;
+    @SerializedName("end_date") private Date endDate;
 
     public Event() {
     }

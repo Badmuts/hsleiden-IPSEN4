@@ -30,7 +30,7 @@ public class DashboardActivity extends BaseActivity
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Perfom injection
+        // Perform injection
         ((App) getApplication()).component().inject(this);
         // View stuff
         setContentView(R.layout.activity_dashboard);
@@ -40,9 +40,7 @@ public class DashboardActivity extends BaseActivity
         try {
             String course = retrieveAgenda.execute().get().get(0).toString();
             courseName.setText(course);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }

@@ -99,16 +99,16 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event{" +
-                "id=" + id +
-                ", notes='" + notes + '\'' +
-                ", type_name='" + type_name + '\'' +
-                ", highlighted=" + highlighted +
-                ", lectures=" + lectures +
-                ", shortName='" + shortName + '\'' +
-                ", longName='" + longName + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
+        return "Event {" + "\n" +
+                "id=" + id + "\n" +
+                ", notes='" + notes + '\'' + "\n" +
+                ", type_name='" + type_name + '\'' + "\n" +
+                ", highlighted=" + highlighted + "\n" +
+                ", lectures=" + lectures + "\n" +
+                ", shortName='" + shortName + '\'' + "\n" +
+                ", longName='" + longName + '\'' + "\n" +
+                ", startDate=" + startDate + "\n" +
+                ", endDate=" + endDate + "\n" +
                 '}';
     }
 }

@@ -10,19 +10,24 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.inc.yoghurt.ipsen4.App;
+import com.inc.yoghurt.ipsen4.Models.Event;
 import com.inc.yoghurt.ipsen4.R;
 import com.inc.yoghurt.ipsen4.Stucomm.StucommApi;
 import com.inc.yoghurt.ipsen4.Stucomm.StucommTask;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DashboardActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    @Inject StucommTask retrieveAgenda;
+    @Inject StucommApi api;
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.nav_view) NavigationView navigationView;
     @Bind(R.id.drawer_layout) DrawerLayout drawer;
@@ -37,12 +42,26 @@ public class DashboardActivity extends BaseActivity
         setSupportActionBar(toolbar);
         navigationView.setNavigationItemSelectedListener(this);
         // Retrieve agenda
-        try {
-            String course = retrieveAgenda.execute().get().get(0).toString();
-            courseName.setText(course);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        retrieveAgenda();
+    }
+
+    private void retrieveAgenda() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                api.getSchedule("1453071600", "1453590000").enqueue(new Callback<List<Event>>() {
+                    @Override
+                    public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
+                        courseName.setText(response.body().get(0).toString());
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Event>> call, Throwable t) {
+                        courseName.setText(t.getMessage());
+                    }
+                });
+            }
+        }).run();
     }
 
     @Override public void onBackPressed() {
